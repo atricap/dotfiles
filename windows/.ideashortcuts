@@ -1,0 +1,20 @@
+# Custom IDE shortcuts
+Clone Caret Above: M-S-Up
+Clone Caret Below: M-S-Down
+Move Caret To Block Start/End: Remove C-]/C-[
+Delete Line: Remove
+Select Single Line at Caret: Possibly C-L
+Manage Projects: C-K C-E
+Undo: Remove C-Z
+Redo: Remove C-Y
+Find Next: Remove C-L
+Find Previous: Remove M-C-L
+Toggle Full Screen Mode: M-F11
+Toggle Zen Mode: M-C-F11
+Cyclic Expand Word: M-/
+Move Line Up: Remove
+Move Line Down: Remove
+Commit: C-K C-K
+Pin Active Tool Window Tab: C-K C-P
+Move Caret to Page Top: Remove (C-PgUp)
+Move Caret to Page Bottom: Remove (C-PgDn)

@@ -1,0 +1,551 @@
+" vi: set ts=2 sw=0 et:
+
+" Credits go to:
+" Bram Moolenaar
+" The Vim Project
+" https://stackoverflow.com/questions/1218390/what-is-your-most-productive-shortcut-with-vim/2559262#2559262
+" https://github.com/gpakosz/.vim/blob/vanilla/.vimrc
+
+" Vim with all enhancements: first section from vimrc-example.vim
+
+" When started as "evim", evim.vim will already have done these settings, bail
+" out.
+if v:progname =~? "evim"
+  finish
+endif
+
+" Get the defaults that most users want.
+source $VIMRUNTIME/defaults.vim
+
+if has("vms")
+  set nobackup    " do not keep a backup file, use versions instead
+else
+  set backup      " keep a backup file (restore to previous version)
+  if has('persistent_undo')
+    set undofile  " keep an undo file (undo changes after closing)
+  endif
+endif
+
+if &t_Co > 2 || has("gui_running")
+  " Switch on highlighting the last used search pattern.
+  set hlsearch
+endif
+
+" Put these in an autocmd group, so that we can delete them easily.
+augroup vimrcEx
+  au!
+
+  " For all text files set 'textwidth' to 78 characters.
+  autocmd FileType text setlocal textwidth=78
+augroup END
+
+" Add optional packages.
+"
+" The matchit plugin makes the % command work better, but it is not backwards
+" compatible.
+" The ! means the package won't be loaded right away but when plugins are
+" loaded during initialization.
+if has('syntax') && has('eval')
+  packadd! matchit
+endif
+
+
+" ----------------------------------------------------------------------
+
+" source .vimrc.local-pre file, which is in the same directory as this script
+let s:vimrcLocalPre = expand('<sfile>') . '.local-pre'
+if filereadable(s:vimrcLocalPre)
+  exec 'source ' . s:vimrcLocalPre
+endif
+
+
+" ----------------------------------------------------------------------
+
+" Remap a few keys for Windows behavior
+if has("win32")
+  source $VIMRUNTIME/mswin.vim
+  set selection=inclusive " prevent a bug in sexp caused by behave=mswin (sets selection=exclusive)
+endif
+
+" Use the internal diff if available.
+" Otherwise use the special 'diffexpr' for Windows.
+if &diffopt !~# 'internal'
+  set diffexpr=MyDiff()
+endif
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg1 = substitute(arg1, '!', '\!', 'g')
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg2 = substitute(arg2, '!', '\!', 'g')
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let arg3 = substitute(arg3, '!', '\!', 'g')
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      if empty(&shellxquote)
+        let l:shxq_sav = ''
+        set shellxquote&
+      endif
+      let cmd = '"' . $VIMRUNTIME . '\diff"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  let cmd = substitute(cmd, '!', '\!', 'g')
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+  if exists('l:shxq_sav')
+    let &shellxquote=l:shxq_sav
+  endif
+endfunction
+
+
+" ======================================================================
+" End of default settings,
+" Begin of our own settings collection
+
+" -- Display Settings --------------------------------------------------
+
+"set title
+set number "relativenumber
+set cursorline
+set wrap linebreak
+"set breakat+=
+"set whichwrap=
+
+set list                                         " do not hide unprintable characters
+if has("multi_byte")
+  set listchars=tab:▸\·,nbsp:•,trail:␣,extends:▸ " use pretty Unicode unprintable symbols (⌴)
+  "... eol:¬,
+else
+  set listchars=tab:>\.,nbsp:#,trail:.,extends:> " use ASCII characters
+  "... eol:$,
+endif
+
+if exists("+showtabline")
+  set showtabline=1 " only if there are at least two tabs (default)
+endif
+
+set scrolloff=2
+set sidescrolloff=7
+set laststatus=2
+set report=0    " always report changes
+set showmatch matchtime=2 matchpairs+=<:>
+"packadd! matchit
+set showmode showcmd
+set ruler
+set statusline=
+set statusline+=%<      " truncate here
+set statusline+=%f      " file name
+set statusline+=\ [     " begin of indicators
+set statusline+=%M      " MODIFIED indicator
+set statusline+=%R      " READONLY indicator
+set statusline+=%H      " HELP indicator
+set statusline+=%W      " PREVIEW indicator
+set statusline+=,%{!empty(&fenc)?&fenc:&enc}  " fileencoding (or if empty, encoding)
+set statusline+=%{&bomb?'-BOM':''}  " byte order mark
+set statusline+=,%{&ff} " fileformat (line endings)
+set statusline+=]%=     " end of indicators, separate parts
+set statusline+=%-14.(%l,%c%V%)\ %P " right part (ruler) as per default: line, column, virtual column, percentage
+set visualbell "t_vb=...
+"set noerrorbells belloff=...
+set shortmess+=a
+
+
+" -- Editor Settings ---------------------------------------------------
+
+set hlsearch incsearch ignorecase smartcase
+"set gdefault
+filetype plugin indent on
+set autoindent
+set smarttab
+set magic
+set backspace-=start
+set nojoinspaces
+
+" display $ at the end of replacement object instead of deleting it right away
+"set cpoptions+=$
+
+set tabstop=4 shiftwidth=0 expandtab
+
+
+" -- System Settings ---------------------------------------------------
+
+"set lazyredraw
+set history=50
+set undolevels=1000
+
+"set viminfo='20,\"500
+"let &viminfo=&viminfo . ",n" . s:vimdir . "/.viminfo" " viminfo location
+set noundofile
+"if has("persistent_undo")
+"  let &undodir=&backupdir
+"  set undofile  " enable persistent undo
+"endif
+"set nobackup
+set backup writebackup
+set backupskip+=*.tmp
+set backupdir-=.
+set directory-=.
+
+autocmd! vimHints
+
+
+" -- Buffer Settings ---------------------------------------------------
+
+set nobomb
+set hidden
+"set switchbuf=usetab
+set autoread
+"if has("persistent_undo") && (&undofile)
+"  set autowriteall    " auto write changes if persistent undo is enabled
+"endif
+set confirm
+
+
+" -- Unmap some mswin bindings -----------------------------------------
+
+" Don't use some mswin bindings from mswin.vim
+if has("win32")
+  silent! vunmap <C-X>
+  silent! vunmap <C-C>
+  silent! unmap <C-V>
+  silent! iunmap <C-V>
+  silent! vunmap <C-V>
+  silent! cunmap <C-V>
+  silent! unmap <C-Z>
+  silent! iunmap <C-Z>
+  silent! unmap <C-Y>
+  silent! iunmap <C-Y>
+  silent! unmap <C-A>
+  silent! iunmap <C-A>
+  silent! cunmap <C-A>
+
+  if has("gui")
+    silent! unmap <C-F>
+    silent! iunmap <C-F>
+    silent! cunmap <C-F>
+    silent! nunmap <C-H>
+    silent! iunmap <C-H>
+    silent! cunmap <C-H>
+  endif
+endif
+
+
+" -- Bindings ----------------------------------------------------------
+
+set timeoutlen=700
+
+map Q <Nop>
+map Z <Nop>
+map ZQ <Nop>
+map ZZ <Nop>
+
+" Don't use Ex mode, use Q for formatting.
+noremap Q gq
+
+let mapleader=","
+let maplocalleader=","
+inoremap jk <Esc>
+"vnoremap jk <Esc>
+
+" -- Buffers
+
+" cd to the directory of the current buffer
+nnoremap <leader>cd :cd %:p:h<CR>
+" switch between last two files (alternate file?)
+
+nnoremap <leader><Tab> <c-^>
+" -- Navigation
+
+" scroll slightly faster
+nnoremap <C-e> 2<C-e>
+nnoremap <C-y> 2<C-y>
+
+" Switch windows with arrow keys, move them with Ctrl
+"nnoremap <Up> <C-w>k
+"nnoremap <Down> <C-w>j
+"nnoremap <Left> <C-w>h
+"nnoremap <Right> <C-w>l
+"nnoremap <C-Up> <C-w>K
+"nnoremap <C-Down> <C-w>J
+"nnoremap <C-Left> <C-w>H
+"nnoremap <C-Right> <C-w>L
+nnoremap <S-Up> <C-w>+
+nnoremap <S-Down> <C-w>-
+nnoremap <S-Left> <C-w><
+nnoremap <S-Right> <C-w>>
+
+" CTRL-Shift-Tab is previous window (CTRL-Tab is next window: mswin.vim)
+noremap <C-S-Tab> <C-W>W
+inoremap <C-S-Tab> <C-O><C-W>W
+cnoremap <C-S-Tab> <C-C><C-W>W
+onoremap <C-S-Tab> <C-C><C-W>W
+
+" Move cursor wihout leaving insert mode
+try
+  redir => s:backspace
+  silent! execute 'set ' 't_kb?'
+  redir END
+  if s:backspace !~ '\^H'
+    inoremap <C-h> <C-o>h
+    inoremap <C-j> <C-o>j
+    inoremap <C-k> <C-o>k
+    inoremap <C-l> <C-o>l
+  endif
+finally
+  redir END
+endtry
+
+" -- Editing
+
+" Make Y consistent with C and D
+nnoremap Y y$
+
+" CTRL-S saves file
+"nnoremap <C-s> :w<CR>
+
+" Delete/change to blackhole
+noremap <silent> <leader>d "_d
+noremap <silent> <leader>c "_c
+
+" Yank/paste to/from OS clipboard
+noremap <silent> <leader>y "+y
+map <silent> <leader>Y "+Y
+noremap <silent> <leader>p "+p
+noremap <silent> <leader>P "+P
+
+" Reselect visual after un-/indent
+vnoremap < <gv
+vnoremap > >gv
+vmap <Tab> >
+vmap <S-Tab> <
+
+" Exit from insert mode without cursor movement
+"inoremap jk <ESC>`^
+
+" Move current line/selection down/up
+noremap <silent> - :m+<CR>
+noremap <silent> _ :m-2<CR>
+vnoremap <silent> - :m'>+<CR>gv
+vnoremap <silent> _ :m'<-2<CR>gv
+
+"noremap gO :.s/^/\r/<CR>:noh<CR>
+"noremap go :+1s/^/\r/<CR>:noh<CR>
+noremap gO O<Esc>j
+noremap go o<Esc>k
+
+" -- Searching
+
+" Automatically start every search with 'very no magic', similar to fgrep
+nnoremap / /\V
+nnoremap ? ?\V
+
+" Temporarily disable search highlighting
+"nnoremap <silent> <leader><Space> :nohlsearch<CR>:match none<CR>:2match none<CR>:3match none<CR>
+
+" Disable search highlighting
+nnoremap <silent> <leader>n :nohlsearch<CR>
+
+" Highlight all instances of the current word where the cursor is positioned
+nnoremap <silent> <leader>h :setl hls<CR>:let @/="\\<<C-r><C-w>\\>"<CR>
+
+" Use <leader>h1, <leader>h2, <leader>h3 to highlight words in different colors
+"nnoremap <silent> <leader>h1 :highlight Highlight1 ctermfg=0 ctermbg=226 guifg=Black guibg=Yellow<CR> :execute 'match Highlight1 /\<<C-r><C-w>\>/'<cr>
+"nnoremap <silent> <leader>h2 :highlight Highlight2 ctermfg=0 ctermbg=51 guifg=Black guibg=Cyan<CR> :execute '2match Highlight2 /\<<C-r><C-w>\>/'<cr>
+"nnoremap <silent> <leader>h3 :highlight Highlight3 ctermfg=0 ctermbg=46 guifg=Black guibg=Green<CR> :execute '3match Highlight3 /\<<C-r><C-w>\>/'<cr>
+
+
+" -- Command mode ------------------------------------------------------
+
+set wildmenu wildignore=*.o,*.a,*.so,*.obj,*.exe,*.msi,*.py[co],*.class,*.swp,*.bak,*~,.svn,.git,.github,.DS_Store
+set wildignorecase
+
+" Sudo then write
+cabbrev w!! w !sudo tee % >/dev/null
+
+set wildmenu wildignore=*.o,*.a,*.so,*.obj,*.exe,*.msi,*.py[co],*.class,*.swp,*.bak,*~,.svn,.git,.github,.DS_Store
+set wildignorecase
+
+
+" -- Plugins -----------------------------------------------------------
+
+" Plugin Rainbow: Activate
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle
+
+" Plugin Elin: Disable auto connect. Connect manually, when working with a
+" clojure project
+"let g:elin_server_auto_connect = v:false
+
+" Plugin Elin: Additional commands
+command! ElinServerStart call elin#server#start()
+command! ElinServerConnect call elin#server#connect(g:elin_server_port)
+
+" Plugin Elin: Enable mappings
+let g:elin_enable_default_key_mappings = v:true
+aug MyElinMappings
+  au!
+  au FileType clojure nmap <buffer> <Leader>ee <Plug>(elin_eval_current_expr)
+  au FileType clojure nmap <buffer> <Leader>ef <Plug>(elin_eval_current_list)
+  au FileType clojure nmap <buffer> <Leader>eF <Plug>(elin_eval_current_top_list)
+  au FileType clojure nmap <buffer> <Leader>ek <Plug>(elin_eval_at_mark)
+  au FileType clojure nmap <buffer> <Leader>ec <Plug>(elin_eval_in_context)
+  au FileType clojure nmap <buffer> <Leader>eN <Plug>(elin_eval_ns_form)
+  au FileType clojure nmap <buffer> <Leader>enl <Cmd>ElinEval (integrant.repl/clear)<CR>
+  au FileType clojure nmap <buffer> <Leader>enp <Cmd>ElinEval (integrant.repl/prep)<CR>
+  au FileType clojure nmap <buffer> <Leader>eni <Cmd>ElinEval (integrant.repl/init)<CR>
+  au FileType clojure nmap <buffer> <Leader>eng <Cmd>ElinEval (integrant.repl/go)<CR>
+  au FileType clojure nmap <buffer> <Leader>enh <Cmd>ElinEval (integrant.repl/halt)<CR>
+  au FileType clojure nmap <buffer> <Leader>enn <Cmd>ElinEval (integrant.repl/suspend)<CR>
+  au FileType clojure nmap <buffer> <Leader>enm <Cmd>ElinEval (integrant.repl/resume)<CR>
+  au FileType clojure nmap <buffer> <Leader>ent <Cmd>ElinEval (integrant.repl/reset)<CR>
+  au FileType clojure nmap <buffer> <Leader>enT <Cmd>ElinEval (integrant.repl/reset-all)<CR>
+  au FileType clojure nmap <buffer> <Leader>enc <Cmd>ElinEval integrant.repl.state/config<CR>
+  au FileType clojure nmap <buffer> <Leader>ens <Cmd>ElinEval integrant.repl.state/system<CR>
+aug END
+
+" Plugin Vim-JsonPath: Define mappings for json buffers
+aug MyJsonPathMappings
+  au FileType json nnoremap <buffer> <silent> <leader>s :<C-u>call jsonpath#echo()<CR>
+  au FileType json nnoremap <buffer> <silent> <leader>b :<C-u>call jsonpath#goto()<CR>
+aug END
+
+" Register the plugins
+
+call plug#begin()
+Plug 'tpope/vim-repeat'
+Plug 'guns/vim-sexp'
+Plug 'tpope/vim-sexp-mappings-for-regular-people'
+Plug 'luochen1990/rainbow'
+Plug 'tpope/vim-surround'
+Plug 'liquidz/elin'
+Plug 'mogelbrod/vim-jsonpath'
+call plug#end()
+
+
+" -- Highlighting ------------------------------------------------------
+
+function EnableHighlighting()
+  " Only do this for Vim version 5.0 and later.
+  if version >= 500
+
+    " In Windows terminal, enable enhanced colors 
+    if &term == "win32"
+      set t_Co=256
+      set termguicolors
+    endif
+
+    " Switch on syntax highlighting if it wasn't on yet.
+    if !exists("syntax_on")
+      syntax on
+    endif
+
+    " Set nice colors
+    if &background == "light"
+      " Light IntelliJ Idea Theme, modified
+      " https://github.com/devsjc/vim-jb/
+      highlight Normal guifg=#000000 ctermfg=0
+      highlight Normal guibg=#FFFFFF ctermbg=NONE
+      highlight Visual guibg=#A6D2FF ctermbg=153
+      highlight Cursor guifg=#FFFFFF ctermfg=231
+      highlight Cursor guibg=#000000 ctermbg=0
+      highlight CursorLine guibg=#FCFAED ctermbg=194
+      highlight! link CursorColumn CursorLine
+      highlight! link ColorColumn CursorLine
+      highlight CursorLineNr guifg=#ADADAD ctermfg=145
+      highlight CursorLineNr guibg=#FCFAED ctermbg=NONE
+      highlight! link PreProc CursorLineNr
+      highlight LineNr guifg=#ADADAD ctermfg=145
+      highlight LineNr guibg=#F2F2F2 ctermbg=NONE
+      highlight! link NonText LineNr
+      highlight! link WhiteSpace LineNr
+      highlight! link SpecialKey LineNr
+      highlight StatusLine gui=bold guibg=#90A959 cterm=bold ctermbg=107
+      highlight StatusLineNC gui=NONE guibg=#DFAF69 cterm=NONE ctermbg=179
+      highlight Constant guifg=#871094 ctermfg=90
+      highlight! link Title Constant
+      highlight String guifg=#138433 ctermfg=29
+      highlight Keyword guifg=#0033B3 ctermfg=173
+      highlight! link Statement Keyword
+      highlight! link Special Keyword
+      highlight Comment guifg=#a0a1a7 ctermfg=247
+      highlight Comment gui=italic cterm=italic
+      "---
+      "" Light IntelliJ Idea Theme
+      "" https://github.com/chiendo97/intellij.vim
+      "highlight Normal guifg=#383a42 ctermfg=237
+      "highlight Normal guibg=#fafafa ctermbg=231
+      ""highlight CursorLine
+      "highlight Cursor guifg=#fafafa ctermfg=231
+      "highlight Cursor guibg=#001cac ctermbg=18
+      "highlight lCursor guibg=Cyan guifg=NONE
+      "highlight NonText guifg=#E6E6E6 ctermfg=237
+      "highlight NonText guibg=#cccccc
+      "highlight Constant guifg=#B027AF ctermfg=123
+      "highlight Special guifg=#001cac ctermfg=18
+      "highlight Comment guifg=#a0a1a7 ctermfg=247
+      "highlight Comment gui=italic cterm=italic
+    else
+      " Dark IntelliJ Idea Theme
+      " https://github.com/devsjc/vim-jb/
+      highlight Normal guifg=#A9B7C6 ctermfg=146
+      highlight Normal guibg=#2B2B2B ctermbg=NONE
+      highlight Visual guibg=#214283 ctermbg=25
+      highlight Cursor guifg=#000000 ctermfg=0
+      highlight Cursor guibg=#BBBBBB ctermbg=145
+      highlight CursorLine guibg=#323232 ctermbg=8
+      highlight! link CursorColumn CursorLine
+      highlight! link ColorColumn CursorLine
+      highlight CursorLineNr guifg=#A1A1A1 ctermfg=145
+      highlight CursorLineNr guibg=#323232 ctermbg=8
+      highlight! link PreProc CursorLineNr
+      highlight LineNr guifg=#585B5E ctermfg=59
+      highlight LineNr guibg=#313335 ctermbg=NONE
+      highlight! link NonText LineNr
+      highlight! link WhiteSpace LineNr
+      highlight! link SpecialKey LineNr
+      highlight StatusLine guifg=#000000 ctermfg=0
+      highlight StatusLine gui=bold guibg=#8CA457 cterm=bold ctermbg=142
+      highlight StatusLineNC guifg=#000000 ctermfg=0
+      highlight StatusLineNC gui=NONE guibg=#DFAF69 cterm=NONE ctermbg=179
+      highlight Constant guifg=#9768AC ctermfg=175
+      highlight! link Title Constant
+      highlight String guifg=#6A8759 ctermfg=66
+      highlight Keyword guifg=#CC7832 ctermfg=173
+      highlight! link Statement Keyword
+      highlight! link Special Keyword
+      highlight Comment guifg=#808080 ctermfg=102
+      highlight Comment gui=italic cterm=italic
+      "---
+      " default colors from gvimrc-example.vim
+      "highlight Normal guibg=grey90
+      "highlight Cursor guibg=Green guifg=NONE
+      "highlight lCursor guibg=Cyan guifg=NONE
+      "highlight NonText guibg=grey80
+      "highlight Constant gui=NONE guibg=grey95
+      "highlight Special gui=NONE guibg=grey95
+    endif
+  endif
+endfunction
+
+" On Windows (but not in IntelliJ), enable our predefined highlighting by default
+" On Unix etc. default colors should be nice, but we can call EnableHighlighting() manually
+if has('win32') && !has('ide')
+  call EnableHighlighting()
+endif
+
+
+" ----------------------------------------------------------------------
+
+" Source .vimrc.local file, which is in the same directory as this script
+let s:vimrcLocal = expand('<sfile>') . '.local'
+if filereadable(s:vimrcLocal)
+  exec 'source ' . s:vimrcLocal
+endif
+

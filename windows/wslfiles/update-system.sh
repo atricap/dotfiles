@@ -1,0 +1,5 @@
+#!/bin/bash
+apt-get update
+apt-get -yt $(lsb_release -cs)-security dist-upgrade
+apt-get --trivial-only dist-upgrade
+apt-get autoclean

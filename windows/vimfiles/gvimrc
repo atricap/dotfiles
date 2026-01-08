@@ -1,0 +1,89 @@
+" vi: set ts=2 sw=0 et:
+
+" The commands in this are executed when the GUI is started, after the vimrc
+" has been executed.
+
+" ----------------------------------------------------------------------
+
+" Source .gvimrc.local-pre file, which is in the same directory as this script
+let s:gvimrcLocalPre = expand('<sfile>') . '.local-pre'
+if filereadable(s:gvimrcLocalPre)
+  exec 'source ' . s:gvimrcLocalPre
+endif
+
+
+" ----------------------------------------------------------------------
+
+if has("gui_running")
+
+  " Set-up fonts
+  if has("gui_gtk")
+    set guifont=Inconsolata\ 9
+  elseif has("gui_macvim")
+    set guifont=Menlo\ Regular:h14
+  elseif has("gui_win32")
+    set guifont=Cascadia\ Mono:h8:cANSI,Consolas:h8:cANSI
+  endif
+
+  set columns=110
+  set lines=45
+
+  set guioptions-=T  " remove useless toolbar
+  "set guioptions+=c  " prefer console dialogs to popups
+endif
+
+" Make external commands work through a pipe instead of a pseudo-tty
+"set noguipty
+
+" Set the X11 font to use
+" set guifont=-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso8859-1
+
+set cmdheight=2  " Make command line two lines high
+
+set mousehide  " Hide the mouse when typing text
+
+" Make shift-insert work like in Xterm
+map <S-Insert> <MiddleMouse>
+map! <S-Insert> <MiddleMouse>
+
+"" Only do this for Vim version 5.0 and later.
+"if version >= 500
+"  " Switch on syntax highlighting if it wasn't on yet.
+"  if !exists("syntax_on")
+"    syntax on
+"  endif
+"
+"  " Set nice colors
+"  if &background=="light"
+"    " Light IntelliJ Idea Theme
+"    highlight Normal guifg=#383a42 ctermfg=237
+"    highlight Normal guibg=#fafafa ctermbg=231
+"    highlight Cursor guifg=#fafafa ctermfg=231
+"    highlight Cursor guibg=#001cac ctermbg=18
+"    highlight lCursor guibg=Cyan guifg=NONE
+"    highlight NonText guifg=#E6E6E6 ctermfg=237
+"    highlight NonText guibg=#cccccc
+"    highlight Constant guifg=#B027AF ctermfg=123
+"    highlight Special guifg=#001cac ctermfg=18
+"    highlight Comment guifg=#a0a1a7 ctermfg=247
+"    highlight Comment gui=italic cterm=italic
+"  else
+"    " default colors from gvimrc-example.vim
+"    highlight Normal guibg=grey90
+"    highlight Cursor guibg=Green guifg=NONE
+"    highlight lCursor guibg=Cyan guifg=NONE
+"    highlight NonText guibg=grey80
+"    highlight Constant gui=NONE guibg=grey95
+"    highlight Special gui=NONE guibg=grey95
+"  endif
+"endif
+
+
+" ----------------------------------------------------------------------
+
+" source .gvimrc.local file, which is in the same directory as this script
+let s:gvimrcLocal = expand('<sfile>') . '.local'
+if filereadable(s:gvimrcLocal)
+  exec 'source ' . s:gvimrcLocal
+endif
+
