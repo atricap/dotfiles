@@ -46,3 +46,6 @@
 	ts       = !git cat-file -t $* && git cat-file -s
 [init]
 	defaultBranch = main
+[core]
+	autocrlf = false
+	eol = lf
