@@ -2,6 +2,7 @@
 	name=atricap
 	email=172540644+atricap@users.noreply.github.com
 [alias]
+	a    = add
 	ann  = blame
 	br   = branch
 	b    = branch
@@ -10,6 +11,7 @@
 	co   = checkout
 	pick = cherry-pick
 	pi   = cherry-pick
+	cp   = cherry-pick
 	ci   = commit
 	cf   = config
 	cfl  = config --local
@@ -18,6 +20,7 @@
 	h    = help
 	l    = log --oneline
 	lg   = log --oneline --graph
+	lga  = log --oneline --graph --all
 	lf   = log --oneline --follow
 	lp   = log --oneline --first-parent
 	sh   = show
@@ -26,8 +29,10 @@
 	f    = fetch
 	m    = merge
 	pl   = pull --ff-only
-	plr   = pull --rebase
+	plr  = pull --rebase
 	ps   = push
+	r    = rebase
+	res  = reset
 	cat  = cat-file
 	type = cat-file -t
 	ty   = cat-file -t
@@ -39,7 +44,5 @@
 	tydp     = !git cat-file -t $* && git cat-file -p
 	td       = !git cat-file -t $* && git cat-file -p
 	ts       = !git cat-file -t $* && git cat-file -s
-	la = l --all
-	cp = cherry-pick
 [init]
 	defaultBranch = main
