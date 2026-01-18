@@ -8,6 +8,10 @@
 	b    = branch
 	di   = diff
 	df   = diff
+	dt   = difftool
+	dg   = difftool -g
+	mt   = mergetool
+	mg   = mergetool -g
 	co   = checkout
 	pick = cherry-pick
 	pi   = cherry-pick
@@ -49,3 +53,22 @@
 [core]
 	autocrlf = false
 	eol = lf
+	editor = 'C:\\Program Files\\Vim\\vim91\\vim.exe' -f -i NONE
+[diff]
+	tool = vimdiff
+	guitool = gvimdiff
+	algorithm = histogram
+[difftool]
+	prompt = false
+[merge]
+	tool = vimdiff
+	guitool = gvimdiff
+	conflictStyle = zdiff3
+[mergetool]
+	keepBackup = false
+[difftool "kdiff3"]
+	path = C:\\Users\\mx\\AppData\\Local\\KDiff3\\bin\\kdiff3.exe
+[difftool "gvimdiff"]
+	path = C:\\Program Files\\Vim\\vim91\\gvim.exe
+[mergetool "gvimdiff"]
+	path = C:\\Program Files\\Vim\\vim91\\gvim.exe
