@@ -1,5 +1,3 @@
-" vi: set ts=2 sw=0 et:
-
 " Credits go to:
 " Bram Moolenaar
 " The Vim Project
@@ -208,6 +206,9 @@ set autoread
 "endif
 set confirm
 
+" Use unix line endings even on Windows
+set fileformats=unix,dos
+
 
 " -- Unmap some mswin bindings -----------------------------------------
 
@@ -258,15 +259,18 @@ inoremap jk <Esc>
 " -- Buffers
 
 " cd to the directory of the current buffer
-nnoremap <leader>cd :cd %:p:h<CR>
+nnoremap <silent> <leader>cd :cd %:p:h<CR>
 " switch between last two files (alternate file?)
-
 nnoremap <leader><Tab> <c-^>
+
 " -- Navigation
 
 " scroll slightly faster
 nnoremap <C-e> 2<C-e>
 nnoremap <C-y> 2<C-y>
+
+nnoremap zl 5zl
+nnoremap zh 5zh
 
 " Switch windows with arrow keys, move them with Ctrl
 "nnoremap <Up> <C-w>k
@@ -420,10 +424,10 @@ aug END
 
 call plug#begin()
 Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
 Plug 'guns/vim-sexp'
 Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'luochen1990/rainbow'
-Plug 'tpope/vim-surround'
 Plug 'liquidz/elin'
 Plug 'mogelbrod/vim-jsonpath'
 call plug#end()
@@ -549,3 +553,5 @@ if filereadable(s:vimrcLocal)
   exec 'source ' . s:vimrcLocal
 endif
 
+
+" vim:set ts=2 sw=0 et:
