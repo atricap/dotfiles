@@ -378,6 +378,11 @@ set wildmenu wildignore=*.o,*.a,*.so,*.obj,*.exe,*.msi,*.py[co],*.class,*.swp,*.
 set wildignorecase
 
 
+" -- Vimdiff -----------------------------------------------------------
+
+set diffopt+=context:2,inline:char,algorithm:histogram,indent-heuristic,linematch:60,hiddenoff
+
+
 " -- Plugins -----------------------------------------------------------
 
 " Plugin Rainbow: Activate
@@ -430,6 +435,10 @@ Plug 'tpope/vim-sexp-mappings-for-regular-people'
 Plug 'luochen1990/rainbow'
 Plug 'liquidz/elin'
 Plug 'mogelbrod/vim-jsonpath'
+Plug 'ZSaberLv0/ZFVimDirDiff'
+Plug 'ZSaberLv0/ZFVimJob'
+Plug 'ZSaberLv0/ZFVimIgnore'
+Plug 'ZSaberLv0/ZFVimBackup'
 call plug#end()
 
 
