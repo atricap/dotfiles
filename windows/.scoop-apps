@@ -4,6 +4,8 @@ clj-deps
 findutils
 git
 less
+nodejs-lts
+pnpm
 ripgrep
 scoop
 uutils-coreutils
