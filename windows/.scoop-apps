@@ -1,4 +1,6 @@
 7zip
+babashka
+clj-deps
 findutils
 git
 less
