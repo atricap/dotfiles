@@ -1,9 +1,11 @@
 7zip
+age
 babashka
 clj-deps
 findutils
 git
 less
+minisign
 nodejs-lts
 pnpm
 ripgrep
