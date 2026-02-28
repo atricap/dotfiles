@@ -2,3 +2,4 @@
 @doskey l=ls --color=auto -AF $*
 @doskey ll=ls --color=auto -lhAF $*
 @doskey g=git $*
+@doskey gfind="%USERPROFILE%\scoop\shims\find.exe" $*
